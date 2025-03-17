@@ -333,7 +333,7 @@ const QRCodeReceiver: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-zinc-900">
+    <div className="max-w-2xl mx-auto p-6 bg-zinc-900 rounded-xl shadow-lg border border-zinc-600/25">
       <QRScanner scanning={scanning} onScan={handleScan} onToggleScanning={toggleScanning} />
 
       <div className="mt-4 flex justify-between">
