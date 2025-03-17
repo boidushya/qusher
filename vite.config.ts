@@ -5,7 +5,4 @@ import { defineConfig } from "vite";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  server: {
-    allowedHosts: ["wm-remarks-mistress-newsletters.trycloudflare.com"],
-  },
 });

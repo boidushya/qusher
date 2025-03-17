@@ -124,10 +124,6 @@ export const FileInfo: React.FC<FileInfoProps> = ({ fileName, fileSize, fileType
           </div>
         </div>
       </div>
-
-      <div className="mt-3 text-xs text-zinc-400">
-        Transfer time estimate: ~{Math.ceil(totalChunks * 0.05)} minutes at 200ms per QR code
-      </div>
     </div>
   );
 };
