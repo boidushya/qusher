@@ -84,39 +84,37 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Floating particles effect */}
       <Particles />
     </div>
   );
 };
 
-// Floating particles component
-const Particles: React.FC = () => {
-  return (
-    <div className="absolute inset-0 pointer-events-none z-0">
-      {Array.from({ length: 20 }).map((_, index) => {
-        const size = Math.random() * 4 + 1;
-        const duration = Math.random() * 20 + 10;
-        const initialX = Math.random() * 100;
-        const initialY = Math.random() * 100;
-        const delay = Math.random() * 10;
+const Particles: React.FC = React.memo(() => {
+  const particles = React.useMemo(() => {
+    return Array.from({ length: 20 }).map((_, index) => {
+      const size = Math.random() * 4 + 1;
+      const duration = Math.random() * 20 + 10;
+      const initialX = Math.random() * 100;
+      const initialY = Math.random() * 100;
+      const delay = Math.random() * 10;
 
-        return (
-          <div
-            key={index}
-            className="absolute rounded-full bg-white opacity-20"
-            style={{
-              width: `${size}px`,
-              height: `${size}px`,
-              left: `${initialX}%`,
-              top: `${initialY}%`,
-              animation: `float ${duration}s ease-in-out ${delay}s infinite`,
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-};
+      return (
+        <div
+          key={index}
+          className="absolute rounded-full bg-white opacity-20"
+          style={{
+            width: `${size}px`,
+            height: `${size}px`,
+            left: `${initialX}%`,
+            top: `${initialY}%`,
+            animation: `float ${duration}s ease-in-out ${delay}s infinite`,
+          }}
+        />
+      );
+    });
+  }, []); // Empty dependency array ensures this runs only once
+
+  return <div className="absolute inset-0 pointer-events-none z-0">{particles}</div>;
+});
 
 export default App;
