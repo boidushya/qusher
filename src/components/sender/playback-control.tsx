@@ -1,3 +1,4 @@
+import NumberFlow from "@number-flow/react";
 import { motion } from "framer-motion";
 import React from "react";
 
@@ -28,20 +29,23 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   onSpeedChange,
   onReset,
 }) => {
-  // Convert playback speed to a displayable value (seconds)
   const displaySpeed = (playbackSpeed / 1000).toFixed(1);
 
-  // Calculate progress percentage
   const progressPercentage = ((currentChunkIndex + 1) / totalChunks) * 100;
+
+  const estimatedTransferTime = Math.ceil(totalChunks * (playbackSpeed / 1000));
 
   return (
     <div className="mt-8 bg-zinc-800 rounded-lg border border-zinc-700 p-5">
-      {/* Current Position Display */}
       <div className="mb-4 flex justify-between items-center">
         <div className="text-sm text-zinc-400">
-          <span className="font-medium text-zinc-200">{currentChunkIndex + 1}</span>
+          <span className="font-medium text-zinc-200">
+            <NumberFlow value={currentChunkIndex + 1} />
+          </span>
           <span> / </span>
-          <span>{totalChunks}</span>
+          <span>
+            <NumberFlow value={totalChunks} />
+          </span>
           <span className="text-zinc-500 ml-1">QR codes</span>
         </div>
         <motion.span
@@ -59,7 +63,6 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         </motion.span>
       </div>
 
-      {/* Progress Bar */}
       <div className="w-full bg-zinc-700 rounded-full h-1.5 mb-6 overflow-hidden">
         <motion.div
           className="bg-blue-500 h-full rounded-full"
@@ -69,7 +72,6 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         />
       </div>
 
-      {/* Main Controls */}
       <div className="flex items-center justify-center space-x-3 mb-6">
         <motion.button
           onClick={onReset}
@@ -153,12 +155,11 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         </motion.button>
       </div>
 
-      {/* Playback Speed Control */}
       <div className="bg-zinc-700/50 rounded-lg p-4 border border-zinc-600/50">
         <div className="flex justify-between items-center mb-3">
           <label className="text-sm font-medium text-zinc-300">Playback Speed</label>
           <div className="bg-blue-900/50 border border-blue-800/30 rounded px-2 py-0.5 text-blue-300 text-sm font-medium">
-            {displaySpeed}s per QR
+            <NumberFlow value={parseFloat(displaySpeed)} /> s per QR
           </div>
         </div>
 
@@ -200,9 +201,8 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         </div>
       </div>
 
-      {/* Transfer Estimate */}
       <div className="mt-4 text-center text-xs text-zinc-500">
-        Estimated transfer time: ~{Math.ceil(totalChunks * (playbackSpeed / 1000))} seconds at current speed
+        Estimated transfer time: ~<NumberFlow value={estimatedTransferTime} /> seconds at current speed
       </div>
     </div>
   );

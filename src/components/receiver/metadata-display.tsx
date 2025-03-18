@@ -1,3 +1,4 @@
+import NumberFlow from "@number-flow/react";
 import React from "react";
 import { FileMetadata } from "../../types";
 
@@ -9,8 +10,8 @@ interface MetadataDisplayProps {
 
 export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, receivedChunks, lastScannedIndex }) => {
   const progressPercentage = Math.round((Object.keys(receivedChunks).length / fileMetadata.totalChunks) * 100);
+  const receivedCount = Object.keys(receivedChunks).length;
 
-  // Format file size to make it human-readable
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -19,7 +20,6 @@ export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // Get appropriate icon for the progress based on percentage
   const getProgressIcon = () => {
     if (progressPercentage < 33) {
       return (
@@ -57,7 +57,6 @@ export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, 
     }
   };
 
-  // Get file icon based on mime type
   const getFileIcon = () => {
     const fileType = fileMetadata.fileType;
 
@@ -119,10 +118,9 @@ export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, 
     }
   };
 
-  // Estimate remaining time
   const estimateRemainingTime = () => {
     const chunksRemaining = fileMetadata.totalChunks - Object.keys(receivedChunks).length;
-    const seconds = chunksRemaining * 1.5; // Assuming 1.5 seconds per chunk
+    const seconds = chunksRemaining * 1.5;
 
     if (seconds < 60) {
       return `${Math.ceil(seconds)} seconds`;
@@ -131,7 +129,6 @@ export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, 
     }
   };
 
-  // Get a color class based on progress
   const getProgressColorClass = () => {
     if (progressPercentage < 33) return "bg-yellow-600";
     if (progressPercentage < 66) return "bg-blue-600";
@@ -152,8 +149,9 @@ export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, 
             <span className="text-blue-400 mr-2">{getProgressIcon()}</span>
             <span className="text-zinc-300">Progress</span>
           </div>
-          <div className="text-zinc-300 font-medium">
-            {Object.keys(receivedChunks).length} of {fileMetadata.totalChunks} chunks
+          <div className="text-zinc-300 font-medium whitespace-pre">
+            <NumberFlow value={receivedCount} className="inline-block" /> of{" "}
+            <NumberFlow value={fileMetadata.totalChunks} className="inline-block" /> chunks
           </div>
         </div>
 
@@ -165,7 +163,9 @@ export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, 
         </div>
 
         <div className="flex justify-between text-sm">
-          <span className="text-zinc-400">{progressPercentage}% complete</span>
+          <span className="text-zinc-400">
+            <NumberFlow value={progressPercentage} className="inline-block" />% complete
+          </span>
           <span className="text-zinc-400">Est. remaining: {estimateRemainingTime()}</span>
         </div>
       </div>
@@ -196,7 +196,7 @@ export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, 
         <div className="bg-zinc-900/60 p-3 rounded-md">
           <span className="text-zinc-400 text-sm">Last Scanned</span>
           <p className="text-zinc-100 font-medium flex items-center">
-            Chunk {lastScannedIndex + 1}
+            Chunk <NumberFlow value={lastScannedIndex + 1} className="mx-1" />
             <span className="ml-2 flex h-3 w-3">
               <span className="animate-ping absolute h-3 w-3 rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative rounded-full h-3 w-3 bg-blue-500"></span>
@@ -216,9 +216,11 @@ export const MetadataDisplay: React.FC<MetadataDisplayProps> = ({ fileMetadata, 
         <div className="bg-zinc-900/60 p-3 rounded-md">
           <span className="text-zinc-400 text-sm">Total QR Codes</span>
           <p className="text-zinc-100 flex items-center justify-between">
-            <span className="font-medium">{fileMetadata.totalChunks}</span>
+            <span className="font-medium">
+              <NumberFlow value={fileMetadata.totalChunks} />
+            </span>
             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-300">
-              {Math.round((Object.keys(receivedChunks).length / fileMetadata.totalChunks) * 100)}% scanned
+              <NumberFlow value={progressPercentage} className="inline-block" />% scanned
             </span>
           </p>
         </div>

@@ -1,3 +1,4 @@
+import NumberFlow from "@number-flow/react";
 import React from "react";
 
 interface ChunkDisplayProps {
@@ -7,10 +8,9 @@ interface ChunkDisplayProps {
 }
 
 export const ChunkDisplay: React.FC<ChunkDisplayProps> = ({ receivedChunks, totalChunks, missingChunks }) => {
-  // Calculate completion percentage
   const completionPercentage = Math.round((Object.keys(receivedChunks).length / totalChunks) * 100);
+  const receivedCount = Object.keys(receivedChunks).length;
 
-  // Create an array of all chunk indices
   const allChunks = Array.from({ length: totalChunks }, (_, i) => i);
 
   return (
@@ -27,12 +27,14 @@ export const ChunkDisplay: React.FC<ChunkDisplayProps> = ({ receivedChunks, tota
           </svg>
           Chunks Status
         </h3>
-        <div className="text-sm text-blue-300 font-medium">
-          {Object.keys(receivedChunks).length} / {totalChunks} received ({completionPercentage}%)
+        <div className="text-sm text-blue-300 font-medium flex items-center whitespace-pre">
+          <NumberFlow value={receivedCount} className="inline-block" /> /{" "}
+          <NumberFlow value={totalChunks} className="inline-block" /> received (
+          <NumberFlow value={completionPercentage} className="inline-block" />
+          %)
         </div>
       </div>
 
-      {/* Flexbox with wrapping for responsive layout */}
       <div className="flex flex-wrap gap-1">
         {allChunks.map(index => (
           <div
@@ -63,6 +65,7 @@ export const ChunkDisplay: React.FC<ChunkDisplayProps> = ({ receivedChunks, tota
             </svg>
             <span className="flex-1">
               Missing chunks:
+              <NumberFlow value={missingChunks.length} className="mx-1 font-medium" />
               <span className="ml-1 break-words">
                 {missingChunks.length > 10
                   ? `${missingChunks.slice(0, 10).join(", ")}... and ${missingChunks.length - 10} more`

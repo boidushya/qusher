@@ -16,15 +16,13 @@ const QRCodeReceiver: React.FC = () => {
   const [downloadReady, setDownloadReady] = useState<boolean>(false);
   const lastProcessedData = useRef("");
   const feedbackTimeoutRef = useRef<number | null>(null);
-  const progressSectionRef = useRef<HTMLDivElement>(null); // Reference to the progress section
+  const progressSectionRef = useRef<HTMLDivElement>(null);
 
-  // Check if all chunks are received
   useEffect(() => {
     if (fileMetadata && progress.total > 0) {
       const allChunksReceived = Object.keys(receivedChunks).length >= progress.total;
 
       if (allChunksReceived) {
-        // Verify no chunks are missing
         const chunksArray = Array(progress.total)
           .fill(null)
           .map((_, index) => receivedChunks[index]);
@@ -32,7 +30,6 @@ const QRCodeReceiver: React.FC = () => {
         const allChunksPresent = !chunksArray.some(chunk => !chunk);
 
         if (allChunksPresent && !downloadReady) {
-          // Play a sound or provide feedback when all chunks are received
           try {
             const audio = new Audio(
               "data:audio/mp3;base64,SUQzAwAAAAABOlRTU0UAAAAwAAAATEFNRSA2NGJpdHMgdmVyc2lvbiAzLjEwMABURU5DAAAABQAAAFVuaWNvZGUAVFlFUgAAAAUAAABMQU1FAP/7kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -43,7 +40,6 @@ const QRCodeReceiver: React.FC = () => {
             console.log("Audio playback error:", e);
           }
 
-          // Show completion feedback
           showFeedback("All chunks received!", "success");
         }
 
@@ -56,18 +52,15 @@ const QRCodeReceiver: React.FC = () => {
     }
   }, [receivedChunks, fileMetadata, progress.total, downloadReady]);
 
-  // New effect to handle scrolling to progress section when scanning starts or a new chunk is received
   useEffect(() => {
     if (scanning && fileMetadata && progressSectionRef.current) {
-      // Scroll to progress section with smooth animation
       progressSectionRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     }
-  }, [scanning, fileMetadata, lastScannedIndex]); // Re-run when scanning starts or a new chunk is scanned
+  }, [scanning, fileMetadata, lastScannedIndex]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (feedbackTimeoutRef.current) {
@@ -76,39 +69,32 @@ const QRCodeReceiver: React.FC = () => {
     };
   }, []);
 
-  // Toggle scanning
   const toggleScanning = (): void => {
     setScanning(!scanning);
 
-    // If starting scanning and metadata exists, scroll to progress section
     if (!scanning && fileMetadata && progressSectionRef.current) {
       setTimeout(() => {
         progressSectionRef.current?.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
-      }, 300); // Short delay to allow the UI to update
+      }, 300);
     }
   };
 
-  // Show feedback message with type
   const showFeedback = (message: string, type: "success" | "warning" | "info" = "info") => {
-    // First, remove any existing feedback element
     const existingFeedback = document.getElementById("scan-feedback");
     if (existingFeedback) {
       document.body.removeChild(existingFeedback);
     }
 
-    // Clear any pending timeout
     if (feedbackTimeoutRef.current) {
       clearTimeout(feedbackTimeoutRef.current);
     }
 
-    // Create new feedback element
     const scanFeedback = document.createElement("div");
     scanFeedback.id = "scan-feedback";
 
-    // Apply styles based on type
     let bgColor = "bg-blue-500";
     let icon = `<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -136,12 +122,10 @@ const QRCodeReceiver: React.FC = () => {
 
     document.body.appendChild(scanFeedback);
 
-    // Animate in
     setTimeout(() => {
       scanFeedback.style.transform = "translateY(0)";
     }, 10);
 
-    // Remove after delay
     feedbackTimeoutRef.current = setTimeout(() => {
       if (scanFeedback.parentNode) {
         scanFeedback.style.transform = "translateY(10px)";
@@ -155,16 +139,12 @@ const QRCodeReceiver: React.FC = () => {
     }, 2000);
   };
 
-  // Handle successful QR code scan
   const handleScan = (result: QrScanner.ScanResult): void => {
     try {
-      // Avoid processing the same QR code multiple times in quick succession
-      // by comparing with the last processed data
       if (lastProcessedData.current === result.data) {
         return;
       }
 
-      // Store this data to prevent duplicate processing
       lastProcessedData.current = result.data;
       setTimeout(() => {
         if (lastProcessedData.current === result.data) {
@@ -172,7 +152,6 @@ const QRCodeReceiver: React.FC = () => {
         }
       }, 500);
 
-      // Try to parse the QR code data
       let chunkData: FileChunk;
       try {
         chunkData = JSON.parse(result.data) as FileChunk;
@@ -183,9 +162,7 @@ const QRCodeReceiver: React.FC = () => {
         return;
       }
 
-      // Update file metadata if not already set
       if (!fileMetadata) {
-        // Store file metadata
         const metadata: FileMetadata = {
           fileName: chunkData.fileName,
           fileType: chunkData.fileType || "application/octet-stream",
@@ -197,16 +174,13 @@ const QRCodeReceiver: React.FC = () => {
         console.log("Received file metadata:", metadata);
         setFileMetadata(metadata);
 
-        // Initialize progress
         setProgress({
           received: 0,
           total: chunkData.totalChunks,
         });
 
-        // Show feedback for first chunk
         showFeedback(`Started receiving file: ${metadata.fileName}`, "info");
 
-        // Scroll to progress section when first chunk is received
         setTimeout(() => {
           if (progressSectionRef.current) {
             progressSectionRef.current.scrollIntoView({
@@ -216,7 +190,6 @@ const QRCodeReceiver: React.FC = () => {
           }
         }, 300);
       } else {
-        // Verify the file type is consistent across chunks
         if (fileMetadata.fileType !== chunkData.fileType) {
           console.warn("File type mismatch between chunks:", {
             stored: fileMetadata.fileType,
@@ -225,37 +198,29 @@ const QRCodeReceiver: React.FC = () => {
         }
       }
 
-      // Check if this is a new chunk
       if (!receivedChunks[chunkData.index]) {
-        // Add the new chunk
         setReceivedChunks(prev => {
           const updated = { ...prev, [chunkData.index]: chunkData.data };
           return updated;
         });
 
-        // Update progress counter
         setProgress(prev => ({
           ...prev,
           received: Object.keys(receivedChunks).length + 1,
         }));
 
-        // Set last scanned index
         setLastScannedIndex(chunkData.index);
 
-        // Calculate how many chunks are now received
         const newTotalReceived = Object.keys(receivedChunks).length + 1;
 
-        // Check if all chunks are now received
         if (fileMetadata && newTotalReceived >= fileMetadata.totalChunks) {
-          // Don't show individual chunk feedback as we'll show the "all done" feedback
           return;
         }
 
-        // Only show feedback for milestone chunks (every 5th chunk or custom logic)
         const isMilestone =
-          newTotalReceived % 5 === 0 || // Every 5 chunks
-          newTotalReceived === 1 || // First chunk
-          (fileMetadata && newTotalReceived === Math.floor(fileMetadata.totalChunks / 2)); // Halfway point
+          newTotalReceived % 5 === 0 ||
+          newTotalReceived === 1 ||
+          (fileMetadata && newTotalReceived === Math.floor(fileMetadata.totalChunks / 2));
 
         if (isMilestone) {
           if (fileMetadata) {
@@ -266,7 +231,6 @@ const QRCodeReceiver: React.FC = () => {
           }
         }
       } else {
-        // This chunk was already scanned
         showFeedback(`Chunk ${chunkData.index + 1} already scanned`, "warning");
       }
     } catch (error) {
@@ -275,20 +239,17 @@ const QRCodeReceiver: React.FC = () => {
     }
   };
 
-  // Reassemble and download the file
   const downloadFile = (): void => {
     if (!fileMetadata) return;
 
     console.log("Starting download with metadata:", fileMetadata);
 
-    // Check if we have all chunks
     if (Object.keys(receivedChunks).length < fileMetadata.totalChunks) {
       const missingCount = fileMetadata.totalChunks - Object.keys(receivedChunks).length;
       showFeedback(`Missing ${missingCount} chunks. Cannot download yet.`, "warning");
       return;
     }
 
-    // Assemble file from chunks
     const combinedArray = assembleFileFromChunks(receivedChunks, fileMetadata.totalChunks);
 
     if (!combinedArray) {
@@ -299,32 +260,26 @@ const QRCodeReceiver: React.FC = () => {
     console.log("Assembling file from chunks...");
     showFeedback("Preparing file for download...", "info");
 
-    // Use the file type from metadata
     const fileType = fileMetadata.fileType;
     console.log("Using file type:", fileType);
 
-    // Create the blob with the proper MIME type
     const blob = new Blob([combinedArray], {
       type: fileType,
     });
 
-    // Get the original filename
     let filename = fileMetadata.fileName;
 
-    // If filename doesn't have an extension but we have one, add it
     if (fileMetadata.fileExtension && !filename.endsWith(`.${fileMetadata.fileExtension}`)) {
       filename = `${filename}.${fileMetadata.fileExtension}`;
     }
 
     console.log("Using filename for download:", filename);
 
-    // Create download link
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
 
-    // Log download details
     console.log("Downloading file:", {
       name: a.download,
       type: fileType,
@@ -332,7 +287,6 @@ const QRCodeReceiver: React.FC = () => {
       size: combinedArray.length + " bytes",
     });
 
-    // Trigger download
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -341,7 +295,6 @@ const QRCodeReceiver: React.FC = () => {
     showFeedback(`File "${filename}" downloaded successfully!`, "success");
   };
 
-  // Reset the receiver
   const resetReceiver = (): void => {
     setReceivedChunks({});
     setFileMetadata(null);
@@ -351,7 +304,6 @@ const QRCodeReceiver: React.FC = () => {
     showFeedback("Scanner reset. Ready for new file.", "info");
   };
 
-  // Get missing chunks
   const getMissingChunks = (): number[] => {
     if (!fileMetadata) return [];
 

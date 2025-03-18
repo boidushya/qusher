@@ -14,10 +14,8 @@ export const QRScanner: React.FC<QRScannerProps> = ({ scanning, onScan, onToggle
   const [cameras, setCameras] = React.useState<QrScanner.Camera[]>([]);
   const [selectedCamera, setSelectedCamera] = React.useState<string>("");
 
-  // Initialize scanner
   useEffect(() => {
     if (videoRef.current && !scanner) {
-      // Configure QR scanner with continuous scanning option
       const qrScanner = new QrScanner(
         videoRef.current,
         result => {
@@ -27,20 +25,18 @@ export const QRScanner: React.FC<QRScannerProps> = ({ scanning, onScan, onToggle
           returnDetailedScanResult: true,
           highlightScanRegion: true,
           highlightCodeOutline: true,
-          preferredCamera: "environment", // Prefer back camera on mobile
-          maxScansPerSecond: 5, // Limit scan rate to avoid performance issues
+          preferredCamera: "environment",
+          maxScansPerSecond: 5,
         }
       );
 
       setScanner(qrScanner);
       scannerRef.current = qrScanner;
 
-      // Get available cameras
       QrScanner.listCameras()
         .then(cameras => {
           setCameras(cameras);
           if (cameras.length > 0) {
-            // By default, select environment camera if available, otherwise first camera
             const environmentCamera = cameras.find(camera => camera.id.includes("environment"));
             setSelectedCamera(environmentCamera ? environmentCamera.id : cameras[0].id);
           }
@@ -50,7 +46,6 @@ export const QRScanner: React.FC<QRScannerProps> = ({ scanning, onScan, onToggle
         });
     }
 
-    // Cleanup on component unmount
     return () => {
       if (scannerRef.current) {
         scannerRef.current.stop();
@@ -60,7 +55,6 @@ export const QRScanner: React.FC<QRScannerProps> = ({ scanning, onScan, onToggle
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle camera change
   useEffect(() => {
     if (scanner && selectedCamera) {
       const wasScanning = scanning;
@@ -81,13 +75,12 @@ export const QRScanner: React.FC<QRScannerProps> = ({ scanning, onScan, onToggle
     }
   }, [selectedCamera, scanner, scanning]);
 
-  // Handle scanning toggle
   useEffect(() => {
     if (scanner) {
       if (scanning) {
         scanner.start().catch(error => {
           console.error("Error starting camera:", error);
-          // Handle camera access errors
+
           if (error.name === "NotAllowedError") {
             alert("Camera access was denied. Please allow camera access and try again.");
           } else if (error.name === "NotFoundError") {
@@ -195,7 +188,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ scanning, onScan, onToggle
       {scanning && (
         <div className="mt-4 px-3 py-2 bg-zinc-800 rounded-md text-zinc-300 text-sm flex items-center">
           <svg
-            className="w-4 h-4 mr-1.5 text-blue-400 animate-pulse"
+            className="w-4 h-4 mr-1.5 text-blue-400 animate-pulse shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

@@ -8,7 +8,6 @@ interface FileInfoProps {
 }
 
 export const FileInfo: React.FC<FileInfoProps> = ({ fileName, fileSize, fileType, totalChunks }) => {
-  // Format file size to make it human-readable
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -17,7 +16,6 @@ export const FileInfo: React.FC<FileInfoProps> = ({ fileName, fileSize, fileType
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // Get a file icon based on file type
   const getFileIcon = () => {
     if (fileType.includes("image")) {
       return (

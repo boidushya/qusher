@@ -23,7 +23,6 @@ export const chunkData = (
     const end = Math.min(begin + chunkSize, array.length);
     const chunk = array.slice(begin, end);
 
-    // Create a chunk object with metadata
     const chunkObj: FileChunk = {
       index: i,
       totalChunks,
@@ -34,16 +33,13 @@ export const chunkData = (
       fileExtension: getFileExtension(fileName) || getMimeTypeExtension(fileType) || undefined,
     };
 
-    // Log first chunk details for debugging
     if (i === 0) {
       console.log("Sending file type:", fileType);
       console.log("First chunk:", chunkObj);
     }
 
-    // Convert to JSON
     const jsonString = JSON.stringify(chunkObj);
 
-    // Check if the data would be too large for a QR code
     if (jsonString.length > 1000) {
       console.warn(`Chunk ${i} data is large (${jsonString.length} chars). QR code may be difficult to scan.`);
     }
@@ -61,20 +57,16 @@ export const assembleFileFromChunks = (
   receivedChunks: Record<number, string>,
   totalChunks: number
 ): Uint8Array | null => {
-  // Organize chunks in order
   const chunksArray = Array(totalChunks)
     .fill(null)
     .map((_, index) => receivedChunks[index]);
 
-  // Check if any chunks are missing
   if (chunksArray.some(chunk => !chunk)) {
     return null;
   }
 
-  // Convert base64 chunks back to binary
   const binaryChunks = chunksArray.map(chunk => base64ToBuffer(chunk));
 
-  // Combine all chunks
   const combinedLength = binaryChunks.reduce((acc, chunk) => acc + chunk.byteLength, 0);
   const combinedArray = new Uint8Array(combinedLength);
 

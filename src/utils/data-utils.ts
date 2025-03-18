@@ -3,17 +3,14 @@
  * Different file types may benefit from different chunk sizes
  */
 export function calculateOptimalChunkSize(fileType: string): number {
-  // Text files can use smaller chunks as they compress well
   if (fileType.startsWith("text/")) {
     return 512;
   }
 
-  // Binary files need smaller chunks to ensure QR codes don't get too dense
   if (fileType.includes("image/") || fileType.includes("audio/") || fileType.includes("video/")) {
     return 128;
   }
 
-  // Default size for other file types
   return 256;
 }
 

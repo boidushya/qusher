@@ -13,8 +13,8 @@ const FileToQRCodeSequence: React.FC = () => {
   const [fileChunks, setFileChunks] = useState<string[]>([]);
   const [currentChunkIndex, setCurrentChunkIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isLooping, setIsLooping] = useState<boolean>(true); // Default to looping enabled
-  const [playbackSpeed, setPlaybackSpeed] = useState<number>(200); // ms per frame
+  const [isLooping, setIsLooping] = useState<boolean>(true);
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(200);
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
@@ -22,13 +22,10 @@ const FileToQRCodeSequence: React.FC = () => {
   };
 
   const processFile = (file: File) => {
-    // Calculate optimal chunk size based on file type
     const chunkSize = calculateOptimalChunkSize(file.type || "application/octet-stream");
 
-    // Estimate number of QR codes needed
     const estimatedQRCodes = estimateQRCodeCount(file.size, chunkSize);
 
-    // Warn user if there will be many QR codes
     if (estimatedQRCodes > 50) {
       alert(
         `Warning: This file will generate approximately ${estimatedQRCodes} QR codes. This may take a long time to transfer.`
@@ -52,7 +49,6 @@ const FileToQRCodeSequence: React.FC = () => {
   };
 
   const togglePlayback = (): void => {
-    // If we're at the end and trying to play, restart from the beginning
     if (currentChunkIndex >= fileChunks.length - 1 && !isPlaying) {
       setCurrentChunkIndex(0);
     }
@@ -71,7 +67,6 @@ const FileToQRCodeSequence: React.FC = () => {
     if (currentChunkIndex < fileChunks.length - 1) {
       setCurrentChunkIndex(currentChunkIndex + 1);
     } else if (isLooping) {
-      // Loop back to the first chunk if looping is enabled
       setCurrentChunkIndex(0);
     }
   };
@@ -82,19 +77,15 @@ const FileToQRCodeSequence: React.FC = () => {
     }
   };
 
-  // Use custom hook for interval with looping functionality
   useInterval(
     () => {
       if (isPlaying && fileChunks.length > 0) {
         setCurrentChunkIndex(prevIndex => {
           const nextIndex = prevIndex + 1;
           if (nextIndex >= fileChunks.length) {
-            // If we've reached the end
             if (isLooping) {
-              // Loop back to the beginning if looping is enabled
               return 0;
             } else {
-              // Stop playback if looping is disabled
               setIsPlaying(false);
               return prevIndex;
             }

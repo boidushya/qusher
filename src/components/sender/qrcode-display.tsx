@@ -1,3 +1,4 @@
+import NumberFlow from "@number-flow/react";
 import { QRCodeSVG as QRCode } from "qrcode.react";
 import React from "react";
 
@@ -12,8 +13,8 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ data, currentIndex
   return (
     <div className="flex flex-col items-center p-4">
       <div className="text-center mb-4">
-        <p className="text-lg">
-          Chunk {currentIndex + 1} of {totalChunks}
+        <p className="text-lg whitespace-pre">
+          Chunk <NumberFlow value={currentIndex + 1} /> of <NumberFlow value={totalChunks} />
         </p>
         <p className="text-sm text-zinc-400">Filename: {fileName}</p>
       </div>

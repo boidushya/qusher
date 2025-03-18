@@ -112,7 +112,7 @@ const Particles: React.FC = React.memo(() => {
         />
       );
     });
-  }, []); // Empty dependency array ensures this runs only once
+  }, []);
 
   return <div className="absolute inset-0 pointer-events-none z-0">{particles}</div>;
 });
