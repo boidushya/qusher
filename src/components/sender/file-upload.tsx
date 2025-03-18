@@ -1,9 +1,16 @@
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
 }
+
+const animationVariants = {
+  initial: { opacity: 0, scale: 0, height: "0", marginTop: 0 },
+  animate: { opacity: 1, scale: 1, height: "auto", marginTop: 16 },
+  exit: { opacity: 0, scale: 0, height: "0", marginTop: 0 },
+};
 
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
   const [fileName, setFileName] = useState<string | null>(null);
@@ -93,9 +100,19 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
         </div>
       </div>
 
-      {isDragActive && (
-        <div className="mt-2 text-center text-blue-400 text-sm animate-pulse">Drop the file here...</div>
-      )}
+      <AnimatePresence>
+        {isDragActive && (
+          <motion.div
+            variants={animationVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="text-center text-blue-400 text-sm animate-pulse origin-top"
+          >
+            Drop the file here...
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

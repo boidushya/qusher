@@ -164,15 +164,10 @@ const FileToQRCodeSequence: React.FC = () => {
                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <div>
-                <p className="mb-1">For best results:</p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>Use smaller files when possible (under 5MB)</li>
-                  <li>Adjust playback speed based on scanning conditions</li>
-                  <li>Ensure good lighting for easier scanning</li>
-                  <li>Keep QR codes clearly visible on screen</li>
-                </ul>
-              </div>
+              <span>
+                For best results, use smaller files when possible (under 50Kb), adjust playback speed based on scanning
+                conditions, ensure good lighting for easier scanning & keep QR codes clearly visible on screen
+              </span>
             </div>
           </div>
         </Collapse>

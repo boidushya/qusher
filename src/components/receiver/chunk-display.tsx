@@ -10,12 +10,8 @@ export const ChunkDisplay: React.FC<ChunkDisplayProps> = ({ receivedChunks, tota
   // Calculate completion percentage
   const completionPercentage = Math.round((Object.keys(receivedChunks).length / totalChunks) * 100);
 
-  // Group chunks into rows of 10 for better organization
-  const chunksInRows = Array.from({ length: Math.ceil(totalChunks / 10) }).map((_, rowIndex) => {
-    const startIndex = rowIndex * 10;
-    const endIndex = Math.min(startIndex + 10, totalChunks);
-    return Array.from({ length: endIndex - startIndex }).map((_, i) => startIndex + i);
-  });
+  // Create an array of all chunk indices
+  const allChunks = Array.from({ length: totalChunks }, (_, i) => i);
 
   return (
     <div className="mt-6 p-5 bg-zinc-800 rounded-lg border border-zinc-700">
@@ -36,23 +32,20 @@ export const ChunkDisplay: React.FC<ChunkDisplayProps> = ({ receivedChunks, tota
         </div>
       </div>
 
-      <div className="space-y-2">
-        {chunksInRows.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex flex-wrap gap-1.5">
-            {row.map(index => (
-              <div
-                key={index}
-                className={`w-8 h-8 flex items-center justify-center text-sm rounded transition-all duration-200
-                  ${
-                    receivedChunks[index]
-                      ? "bg-green-600 text-white shadow-sm shadow-green-900/40"
-                      : "bg-zinc-600 text-zinc-300 hover:bg-zinc-500"
-                  }`}
-                title={`Chunk ${index + 1}${receivedChunks[index] ? " - Received" : " - Missing"}`}
-              >
-                {index + 1}
-              </div>
-            ))}
+      {/* Flexbox with wrapping for responsive layout */}
+      <div className="flex flex-wrap gap-1">
+        {allChunks.map(index => (
+          <div
+            key={index}
+            className={`w-8 h-8 shrink-0 grow-0 flex items-center justify-center text-xs rounded transition-all duration-200
+              ${
+                receivedChunks[index]
+                  ? "bg-green-600 text-white shadow-sm shadow-green-900/40"
+                  : "bg-zinc-600 text-zinc-300 hover:bg-zinc-500"
+              }`}
+            title={`Chunk ${index + 1}${receivedChunks[index] ? " - Received" : " - Missing"}`}
+          >
+            {index + 1}
           </div>
         ))}
       </div>
@@ -68,9 +61,9 @@ export const ChunkDisplay: React.FC<ChunkDisplayProps> = ({ receivedChunks, tota
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
               />
             </svg>
-            <span>
+            <span className="flex-1">
               Missing chunks:
-              <span className="font-mono ml-1">
+              <span className="ml-1 break-words">
                 {missingChunks.length > 10
                   ? `${missingChunks.slice(0, 10).join(", ")}... and ${missingChunks.length - 10} more`
                   : missingChunks.join(", ")}

@@ -103,7 +103,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({ scanning, onScan, onToggle
   }, [scanning, scanner]);
 
   return (
-    <div className="mb-6 relative">
+    <div className="mb-4 relative">
       <div className="relative bg-zinc-900 rounded-lg overflow-hidden border border-zinc-700">
         <video ref={videoRef} className="w-full h-96 object-cover rounded-md" />
 

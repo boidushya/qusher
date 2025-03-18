@@ -168,7 +168,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z"
             />
           </svg>
 
@@ -184,20 +184,19 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
               background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((playbackSpeed - 200) / 2800) * 100}%, #374151 ${((playbackSpeed - 200) / 2800) * 100}%, #374151 100%)`,
             }}
           />
-
           <svg className="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
         </div>
 
         <div className="flex justify-between text-xs text-zinc-500 mt-1">
-          <span>Slower</span>
           <span>Faster</span>
+          <span>Slower</span>
         </div>
       </div>
 

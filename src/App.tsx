@@ -1,13 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
-import QRCodeReceiver from "./components/receiver/qrcode-receiver";
-import FileToQRCodeSequence from "./components/sender/file-to-qrcode-sequence";
+import QRCodeReceiver from "./components/receiver";
+import FileToQRCodeSequence from "./components/sender";
 import Nav from "./components/ui/nav";
 
 const animationVariants = {
-  initial: { opacity: 0, y: 16, filter: "blur(4px)" },
-  animate: { opacity: 1, y: 0, filter: "blur(0px)" },
-  exit: { opacity: 0, y: -16, filter: "blur(4px)" },
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -16 },
 };
 
 const App: React.FC = () => {
@@ -26,7 +26,7 @@ const App: React.FC = () => {
         <div className="max-w-4xl mx-auto pt-12 px-4">
           <header className="text-center mb-8">
             <motion.h1
-              className="text-3xl font-bold text-white flex items-center justify-center gap-1"
+              className="text-5xl font-bold text-white flex items-center justify-center gap-1"
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{
@@ -35,7 +35,7 @@ const App: React.FC = () => {
                 damping: 20,
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
                   d="M7 8.6c0-.56 0-.84.109-1.054a1 1 0 0 1 .437-.437C7.76 7 8.04 7 8.6 7h.3c.56 0 .84 0 1.054.109a1 1 0 0 1 .437.437c.109.214.109.494.109 1.054v.3c0 .56 0 .84-.109 1.054a1 1 0 0 1-.437.437c-.214.109-.494.109-1.054.109h-.3c-.56 0-.84 0-1.054-.109a1 1 0 0 1-.437-.437C7 9.74 7 9.46 7 8.9zm0 6.5c0-.56 0-.84.109-1.054a1 1 0 0 1 .437-.437C7.76 13.5 8.04 13.5 8.6 13.5h.3c.56 0 .84 0 1.054.109a1 1 0 0 1 .437.437c.109.214.109.494.109 1.054v.3c0 .56 0 .84-.109 1.054a1 1 0 0 1-.437.437C9.74 17 9.46 17 8.9 17h-.3c-.56 0-.84 0-1.054-.109a1 1 0 0 1-.437-.437C7 16.24 7 15.96 7 15.4zm6.609-7.554C13.5 7.76 13.5 8.04 13.5 8.6v.3c0 .56 0 .84.109 1.054a1 1 0 0 0 .437.437c.214.109.494.109 1.054.109h.3c.56 0 .84 0 1.054-.109a1 1 0 0 0 .437-.437C17 9.74 17 9.46 17 8.9v-.3c0-.56 0-.84-.109-1.054a1 1 0 0 0-.437-.437C16.24 7 15.96 7 15.4 7h-.3c-.56 0-.84 0-1.054.109a1 1 0 0 0-.437.437"
@@ -54,15 +54,15 @@ const App: React.FC = () => {
                   clipRule="evenodd"
                 ></path>
               </svg>
-              <span className="bg-gradient-to-r from-white to-white text-transparent bg-clip-text">Qusher</span>
+              <span className="text-white">Qusher</span>
             </motion.h1>
             <motion.p
-              className="mt-2 text-zinc-200"
+              className="mt-2 text-zinc-300"
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              Share files magically through QR codes!
+              Magically share files with QR codes!
             </motion.p>
           </header>
 
