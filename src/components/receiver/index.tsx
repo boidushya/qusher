@@ -17,6 +17,7 @@ const QRCodeReceiver: React.FC = () => {
   const lastProcessedData = useRef("");
   const feedbackTimeoutRef = useRef<number | null>(null);
   const progressSectionRef = useRef<HTMLDivElement>(null);
+  const downloadSectionRef = useRef<HTMLDivElement>(null);
   const hasScrolledRef = useRef<boolean>(false);
 
   useEffect(() => {
@@ -31,15 +32,14 @@ const QRCodeReceiver: React.FC = () => {
         const allChunksPresent = !chunksArray.some(chunk => !chunk);
 
         if (allChunksPresent && !downloadReady) {
-          try {
-            const audio = new Audio(
-              "data:audio/mp3;base64,SUQzAwAAAAABOlRTU0UAAAAwAAAATEFNRSA2NGJpdHMgdmVyc2lvbiAzLjEwMABURU5DAAAABQAAAFVuaWNvZGUAVFlFUgAAAAUAAABMQU1FAP/7kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-            );
-            audio.volume = 0.5;
-            audio.play().catch(() => console.log("Audio play prevented by browser policy"));
-          } catch (e) {
-            console.log("Audio playback error:", e);
-          }
+          setTimeout(() => {
+            if (downloadSectionRef.current) {
+              downloadSectionRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }
+          }, 300);
 
           showFeedback("All chunks received!", "success");
         }
@@ -67,14 +67,6 @@ const QRCodeReceiver: React.FC = () => {
       hasScrolledRef.current = false;
     }
   }, [scanning, fileMetadata]);
-
-  useEffect(() => {
-    return () => {
-      if (feedbackTimeoutRef.current) {
-        clearTimeout(feedbackTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const toggleScanning = (): void => {
     const wasScanning = scanning;
@@ -380,7 +372,10 @@ const QRCodeReceiver: React.FC = () => {
             missingChunks={getMissingChunks()}
           />
           {downloadReady && (
-            <div className="mt-4 p-5 bg-green-900/40 border border-green-700 rounded-lg">
+            <div
+              ref={downloadSectionRef}
+              className="mt-4 p-5 bg-green-900/40 border border-green-700 rounded-lg scroll-mt-4"
+            >
               <div className="flex items-center text-green-300 font-bold mb-3">
                 <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
