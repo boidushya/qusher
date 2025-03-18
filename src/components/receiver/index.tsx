@@ -17,6 +17,7 @@ const QRCodeReceiver: React.FC = () => {
   const lastProcessedData = useRef("");
   const feedbackTimeoutRef = useRef<number | null>(null);
   const progressSectionRef = useRef<HTMLDivElement>(null);
+  const hasScrolledRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (fileMetadata && progress.total > 0) {
@@ -53,13 +54,19 @@ const QRCodeReceiver: React.FC = () => {
   }, [receivedChunks, fileMetadata, progress.total, downloadReady]);
 
   useEffect(() => {
-    if (scanning && fileMetadata && progressSectionRef.current) {
+    if (scanning && fileMetadata && progressSectionRef.current && !hasScrolledRef.current) {
       progressSectionRef.current.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
+
+      hasScrolledRef.current = true;
     }
-  }, [scanning, fileMetadata, lastScannedIndex]);
+
+    if (!scanning) {
+      hasScrolledRef.current = false;
+    }
+  }, [scanning, fileMetadata]);
 
   useEffect(() => {
     return () => {
@@ -70,14 +77,18 @@ const QRCodeReceiver: React.FC = () => {
   }, []);
 
   const toggleScanning = (): void => {
+    const wasScanning = scanning;
     setScanning(!scanning);
 
-    if (!scanning && fileMetadata && progressSectionRef.current) {
+    if (!wasScanning && fileMetadata && progressSectionRef.current && !hasScrolledRef.current) {
       setTimeout(() => {
-        progressSectionRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        if (progressSectionRef.current) {
+          progressSectionRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+          hasScrolledRef.current = true;
+        }
       }, 300);
     }
   };
@@ -181,14 +192,15 @@ const QRCodeReceiver: React.FC = () => {
 
         showFeedback(`Started receiving file: ${metadata.fileName}`, "info");
 
-        setTimeout(() => {
-          if (progressSectionRef.current) {
-            progressSectionRef.current.scrollIntoView({
+        if (!hasScrolledRef.current && progressSectionRef.current) {
+          setTimeout(() => {
+            progressSectionRef.current?.scrollIntoView({
               behavior: "smooth",
               block: "start",
             });
-          }
-        }, 300);
+            hasScrolledRef.current = true;
+          }, 300);
+        }
       } else {
         if (fileMetadata.fileType !== chunkData.fileType) {
           console.warn("File type mismatch between chunks:", {
@@ -301,6 +313,7 @@ const QRCodeReceiver: React.FC = () => {
     setProgress({ received: 0, total: 0 });
     setLastScannedIndex(-1);
     setDownloadReady(false);
+    hasScrolledRef.current = false;
     showFeedback("Scanner reset. Ready for new file.", "info");
   };
 
@@ -339,7 +352,7 @@ const QRCodeReceiver: React.FC = () => {
         {downloadReady && (
           <button
             onClick={downloadFile}
-            className="px-2 py-1.5 pr-2.5  cursor-pointer bg-green-700 text-white rounded-md text-sm hover:bg-green-600 transition-colors flex items-center"
+            className="px-2 py-1.5 pr-2.5 cursor-pointer bg-green-700 text-white rounded-md text-sm hover:bg-green-600 transition-colors flex items-center"
           >
             <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -356,8 +369,6 @@ const QRCodeReceiver: React.FC = () => {
 
       {fileMetadata && (
         <div ref={progressSectionRef} className="scroll-mt-4">
-          {" "}
-          {/* Added ref and scroll margin */}
           <MetadataDisplay
             fileMetadata={fileMetadata}
             receivedChunks={receivedChunks}
